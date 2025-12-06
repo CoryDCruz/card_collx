@@ -1,12 +1,24 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import routes
 from app.core.config import settings
+from app.db.database import init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Initialize database
+    init_db()
+    yield
+    # Shutdown: cleanup if needed
+
 
 app = FastAPI(
     title="Card Collection Tracker API",
     description="API for tracking sports card collections",
-    version="0.1.0"
+    version="0.1.0",
+    lifespan=lifespan
 )
 
 # CORS middleware for frontend
