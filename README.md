@@ -4,11 +4,12 @@ A web application for tracking and managing your sports card collection. Scan ca
 
 ## Features
 
-- Scan cards using your iPhone camera
-- Catalog and organize your collection
-- AI-powered price discovery
-- Mobile-first responsive design
-- Progressive Web App (PWA) support (coming soon)
+- ✅ Scan cards using your iPhone camera
+- ✅ Image upload, processing, and storage with automatic optimization
+- ✅ Catalog and organize your collection
+- 🚧 AI-powered price discovery (coming soon)
+- ✅ Mobile-first responsive design
+- 🚧 Progressive Web App (PWA) support (coming soon)
 
 ## Tech Stack
 
@@ -17,6 +18,8 @@ A web application for tracking and managing your sports card collection. Scan ca
 - **SQLAlchemy** - Database ORM
 - **Pydantic** - Data validation
 - **SQLite** - Database (can be upgraded to PostgreSQL)
+- **Pillow** - Image processing and optimization
+- **aiofiles** - Async file I/O
 
 ### Frontend
 - **React** - UI framework
@@ -132,18 +135,28 @@ npm run dev
 
 ### API Endpoints
 
+**Operational:**
 - `GET /` - API info
 - `GET /health` - Health check
 - `GET /api/cards` - Get all cards
 - `POST /api/cards` - Create a card manually
-- `POST /api/cards/scan` - Scan a card image
+- `POST /api/cards/scan` - Upload and scan a card image (with automatic image processing)
 - `GET /api/cards/{id}` - Get a specific card
+- `PUT /api/cards/{id}` - Update a card
+- `DELETE /api/cards/{id}` - Delete a card (with automatic image cleanup)
+- `GET /uploads/{card_id}/{filename}` - Serve uploaded card images
+
+**Placeholder (AI integration needed):**
 - `GET /api/cards/{id}/price` - Get price information for a card
 
 ## Roadmap
 
-- [ ] Implement database models and migrations
-- [ ] Add image recognition for card scanning
+- [x] Implement database models and migrations
+- [x] Implement image processing and storage system
+  - Cloud-ready storage abstraction layer
+  - Automatic image optimization (resize, compression)
+  - Static file serving
+- [ ] Add card recognition/OCR for automatic metadata extraction
 - [ ] Build AI agent for price discovery
 - [ ] Add user authentication
 - [ ] Implement PWA features for offline support
