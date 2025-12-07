@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import List
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -18,7 +19,20 @@ class Settings(BaseSettings):
 
     # File Upload
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024  # 10MB
-    UPLOAD_DIR: str = "./uploads"
+
+    @property
+    def UPLOAD_DIR(self) -> str:
+        """Get absolute path to upload directory"""
+        base = Path(__file__).parent.parent.parent  # backend/
+        return str((base / "uploads").resolve())
+
+    # Image Processing Settings
+    MAX_IMAGE_DIMENSION: int = 1024
+    IMAGE_QUALITY: int = 85
+    ALLOWED_IMAGE_FORMATS: List[str] = [
+        'image/jpeg', 'image/jpg', 'image/png',
+        'image/webp', 'image/heic', 'image/heif'
+    ]
 
     # AI/ML Settings (add API keys here later)
     OPENAI_API_KEY: str = ""

@@ -4,6 +4,7 @@ from typing import List
 from app.models.card import Card as CardSchema, CardCreate
 from app.db.database import get_db
 from app.db.models import Card as CardModel
+from app.services.image_service import ImageService
 
 router = APIRouter()
 
@@ -28,11 +29,11 @@ async def create_card(card: CardCreate, db: Session = Depends(get_db)):
 @router.post("/cards/scan")
 async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db)):
     """Upload and scan a card image"""
-    if not file.content_type.startswith("image/"):
+    # Validate content type early
+    if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image")
 
-    # TODO: Implement image processing and card recognition
-    # For now, create a placeholder card
+    # Create placeholder card first (to get ID for storage path)
     db_card = CardModel(
         player_name="Unknown Player",
         notes=f"Scanned from file: {file.filename}"
@@ -41,11 +42,36 @@ async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db))
     db.commit()
     db.refresh(db_card)
 
-    return {
-        "message": "Card scanned successfully",
-        "filename": file.filename,
-        "card_id": db_card.id
-    }
+    try:
+        # Process and save image
+        image_service = ImageService()
+        image_url = await image_service.save_card_image(file, db_card.id)
+
+        # Update card with image URL
+        db_card.image_url = image_url
+        db.commit()
+        db.refresh(db_card)
+
+        return {
+            "message": "Card scanned successfully",
+            "filename": file.filename,
+            "card_id": db_card.id,
+            "image_url": image_url
+        }
+
+    except HTTPException:
+        # Clean up card if image processing fails
+        db.delete(db_card)
+        db.commit()
+        raise
+    except Exception as e:
+        # Clean up card and raise generic error
+        db.delete(db_card)
+        db.commit()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to process image: {str(e)}"
+        )
 
 
 @router.get("/cards/{card_id}", response_model=CardSchema)
@@ -78,6 +104,11 @@ async def delete_card(card_id: int, db: Session = Depends(get_db)):
     db_card = db.query(CardModel).filter(CardModel.id == card_id).first()
     if not db_card:
         raise HTTPException(status_code=404, detail="Card not found")
+
+    # Delete associated image if exists
+    if db_card.image_url:
+        image_service = ImageService()
+        await image_service.delete_card_image(db_card.image_url)
 
     db.delete(db_card)
     db.commit()
