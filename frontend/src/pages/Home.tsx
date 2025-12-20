@@ -2,7 +2,7 @@ import { useState } from 'react';
 import CardScanner from '../components/CardScanner';
 
 function Home() {
-  const [cards, setCards] = useState([]);
+  const [cards] = useState([]);
 
   return (
     <div className="home">
