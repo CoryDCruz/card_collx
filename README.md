@@ -5,10 +5,15 @@ A web application for tracking and managing your sports card collection. Scan ca
 ## Features
 
 - ✅ Scan cards using your iPhone camera
+- ✅ **AI-powered metadata extraction** via OpenAI Vision API (GPT-4o)
+  - Automatically extracts: player name, year, brand, card number, set name, sport
 - ✅ Image upload, processing, and storage with automatic optimization
 - ✅ Catalog and organize your collection
-- 🚧 AI-powered price discovery (coming soon)
 - ✅ Mobile-first responsive design
+- ✅ **Deployed to Vercel** - accessible from any device
+- 🚧 Display card collection in frontend UI (coming soon)
+- 🚧 Front/back card scanning for complete metadata (coming soon)
+- 🚧 AI-powered price discovery (coming soon)
 - 🚧 Progressive Web App (PWA) support (coming soon)
 
 ## Tech Stack
@@ -18,6 +23,7 @@ A web application for tracking and managing your sports card collection. Scan ca
 - **SQLAlchemy** - Database ORM
 - **Pydantic** - Data validation
 - **SQLite** - Database (can be upgraded to PostgreSQL)
+- **OpenAI Vision API** - GPT-4o for automatic card metadata extraction
 - **Pillow** - Image processing and optimization
 - **aiofiles** - Async file I/O
 
@@ -82,7 +88,14 @@ card_collx/
    cp .env.example .env
    ```
 
-5. Run the development server:
+5. **Add your OpenAI API key** to `.env`:
+   ```bash
+   OPENAI_API_KEY=sk-your-actual-api-key-here
+   ENABLE_VISION_EXTRACTION=true
+   ```
+   Get your API key from: https://platform.openai.com/api-keys
+
+6. Run the development server:
    ```bash
    uvicorn app.main:app --reload
    ```
@@ -151,18 +164,112 @@ npm run dev
 
 ## Roadmap
 
-- [x] Implement database models and migrations
-- [x] Implement image processing and storage system
+### ✅ Completed
+- [x] Database models and migrations
+- [x] Image processing and storage system
   - Cloud-ready storage abstraction layer
   - Automatic image optimization (resize, compression)
   - Static file serving
-- [ ] Add card recognition/OCR for automatic metadata extraction
-- [ ] Build AI agent for price discovery
-- [ ] Add user authentication
-- [ ] Implement PWA features for offline support
-- [ ] Add card search and filtering
-- [ ] Implement price history tracking
-- [ ] Add export functionality (CSV, PDF)
+- [x] **OpenAI Vision API integration** for automatic card metadata extraction
+  - Extracts player name, year, brand, card number, set name, sport
+  - GPT-4o Vision with low-detail mode (~$0.004/card)
+- [x] Deployed frontend to Vercel
+- [x] Mobile camera support via iPhone
+
+### 🚧 In Progress / Next Steps
+1. **Frontend Card Display** - Show scanned cards in the UI
+   - Fetch and display cards from API
+   - Card grid with images and metadata
+   - Visual indicators for AI-extracted vs manual data
+
+2. **Front/Back Card Scanning** - Complete metadata capture
+   - Support multiple images per card
+   - Scan front (player image, basic info) and back (stats, card number, serial)
+   - Combine metadata from both sides for complete information
+
+3. **AI Price Discovery Agent** - Market value discovery
+   - Query multiple sources (eBay, COMC, PSA, etc.)
+   - Calculate average market value
+
+### 📋 Future Enhancements
+- [ ] User authentication
+- [ ] PWA features for offline support
+- [ ] Card search and filtering
+- [ ] Price history tracking
+- [ ] Export functionality (CSV, PDF)
+- [ ] Cloud storage migration (S3/GCS/Azure)
+
+## Mobile Deployment with Vercel + ngrok
+
+The frontend is deployed to Vercel for mobile access, while the backend runs locally and is exposed via ngrok.
+
+### Current Setup
+
+- **Frontend**: https://card-collx.vercel.app (Vercel)
+- **Backend**: Local with ngrok tunnel
+
+### Starting a New Session
+
+Each time you restart, ngrok generates a new URL. Follow these steps:
+
+#### 1. Start Backend & ngrok
+
+```bash
+# Terminal 1: Start backend
+cd backend
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+uvicorn app.main:app --reload
+
+# Terminal 2: Start ngrok tunnel
+ngrok http 8000
+```
+
+Copy the ngrok URL from the terminal output:
+```
+Forwarding    https://abc123xyz.ngrok-free.app -> http://localhost:8000
+```
+
+#### 2. Update Backend CORS
+
+Edit `backend/.env` to allow your ngrok URL:
+```bash
+ALLOWED_ORIGINS=["http://localhost:5173","https://YOUR-NEW-NGROK-URL.ngrok-free.app","https://card-collx.vercel.app"]
+```
+
+Restart the backend to apply changes.
+
+#### 3. Update Vercel Environment Variable
+
+**Via Vercel Dashboard:**
+1. Go to https://vercel.com/dashboard
+2. Select your **card-collx** project
+3. Navigate to **Settings** → **Environment Variables**
+4. Find `VITE_API_URL`
+5. Click **Edit** and update to: `https://YOUR-NEW-NGROK-URL.ngrok-free.app/api`
+6. Click **Save**
+7. Click **Redeploy** when prompted
+
+**Via Vercel CLI:**
+```bash
+cd frontend
+vercel env rm VITE_API_URL production
+vercel env add VITE_API_URL production
+# Enter: https://YOUR-NEW-NGROK-URL.ngrok-free.app/api
+vercel --prod
+```
+
+### Avoiding ngrok URL Changes
+
+**Option 1: ngrok Static URL** ($8/month)
+- Get a permanent URL like `https://yourapp.ngrok.app`
+- Never changes, no need to update Vercel
+
+**Option 2: Deploy Backend to Cloud** (Free/Cheap)
+- **Railway**: Free $5/month credit (~150 hours runtime)
+- **Render**: Free tier (spins down after inactivity)
+- **Fly.io**: Free tier available
+
+Then both frontend and backend have permanent URLs.
 
 ## Contributing
 
