@@ -112,6 +112,7 @@ async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db))
         raise
     except Exception as e:
         # Clean up card and raise generic error
+        logger.exception(f"Error processing card scan: {str(e)}")
         db.delete(db_card)
         db.commit()
         raise HTTPException(
