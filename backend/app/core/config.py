@@ -34,8 +34,13 @@ class Settings(BaseSettings):
         'image/webp', 'image/heic', 'image/heif'
     ]
 
-    # AI/ML Settings (add API keys here later)
+    # AI/ML Settings
     OPENAI_API_KEY: str = ""
+    ENABLE_VISION_EXTRACTION: bool = True  # Feature flag to enable/disable vision API
+    VISION_MODEL: str = "gpt-4o"  # GPT-4o with vision
+    VISION_DETAIL_LEVEL: str = "low"  # Cost efficient for card scanning
+    VISION_MAX_TOKENS: int = 500  # Sufficient for structured card metadata
+    VISION_TIMEOUT: int = 20  # 20 second timeout for API calls
 
     class Config:
         env_file = ".env"

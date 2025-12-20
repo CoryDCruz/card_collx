@@ -28,6 +28,19 @@ class Card(CardBase):
         from_attributes = True
 
 
+class CardScanResponse(BaseModel):
+    """Response schema for card scanning endpoint"""
+    message: str
+    card_id: int
+    image_url: str
+    card: Card
+    metadata_extracted: bool
+    extraction_confidence: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 class CardPrice(BaseModel):
     card_id: int
     average_price: float
