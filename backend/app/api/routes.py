@@ -1,7 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
-from pathlib import Path
 import logging
 from app.models.card import Card as CardSchema, CardCreate, CardScanResponse
 from app.db.database import get_db
@@ -49,9 +48,9 @@ async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db))
     db.refresh(db_card)
 
     try:
-        # Process and save image
+        # Process and save image, capturing bytes for vision
         image_service = ImageService()
-        image_url = await image_service.save_card_image(file, db_card.id)
+        image_url, processed_bytes = await image_service.save_card_image_with_bytes(file, db_card.id)
 
         # Update card with image URL
         db_card.image_url = image_url
@@ -64,13 +63,8 @@ async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db))
 
         vision_service = VisionService()
         if settings.ENABLE_VISION_EXTRACTION and vision_service.is_available():
-            # Convert image_url to absolute file path
-            # image_url format: /uploads/{card_id}/{filename}
-            relative_path = image_url.lstrip('/uploads/')
-            image_path = Path(settings.UPLOAD_DIR) / relative_path
-
-            metadata, confidence, error = await vision_service.extract_card_metadata(
-                str(image_path)
+            metadata, confidence, error = await vision_service.extract_card_metadata_from_bytes(
+                processed_bytes
             )
 
             if metadata:

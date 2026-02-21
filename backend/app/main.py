@@ -39,10 +39,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Ensure upload directory exists and mount static files
-upload_dir = Path(settings.UPLOAD_DIR)
-upload_dir.mkdir(parents=True, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=str(upload_dir)), name="uploads")
+# Only mount local static files when using local storage
+if settings.STORAGE_TYPE == "local":
+    upload_dir = Path(settings.UPLOAD_DIR)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory=str(upload_dir)), name="uploads")
 
 # Include API routes
 app.include_router(routes.router, prefix="/api")

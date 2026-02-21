@@ -4,14 +4,10 @@ from app.core.config import settings
 
 
 def get_storage_backend() -> StorageBackend:
-    """
-    Factory function to get configured storage backend
-
-    Returns:
-        Configured storage backend instance
-    """
-    # For now, always return local storage
-    # Future: check settings.STORAGE_TYPE and return S3Backend, etc.
+    """Factory function to get configured storage backend"""
+    if settings.STORAGE_TYPE == "s3":
+        from .s3 import S3StorageBackend
+        return S3StorageBackend()
     return LocalStorageBackend(base_dir=settings.UPLOAD_DIR)
 
 

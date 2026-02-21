@@ -51,3 +51,6 @@ logs/
 .coverage
 htmlcov/
 .pytest_cache/
+
+# MCP
+.mcp.json
