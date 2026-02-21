@@ -74,9 +74,10 @@ async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db))
             )
 
             if metadata:
-                # Update card with extracted metadata (only non-null values)
+                # Update card with extracted metadata (only allowlisted fields)
+                ALLOWED_VISION_FIELDS = {"player_name", "year", "brand", "card_number", "set_name", "sport", "condition", "notes"}
                 for key, value in metadata.items():
-                    if value is not None and hasattr(db_card, key):
+                    if value is not None and key in ALLOWED_VISION_FIELDS:
                         setattr(db_card, key, value)
 
                 db.commit()
@@ -117,7 +118,7 @@ async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db))
         db.commit()
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to process image: {str(e)}"
+            detail="Failed to process image. Please try again."
         )
 
 

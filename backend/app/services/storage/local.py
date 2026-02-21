@@ -46,7 +46,9 @@ class LocalStorageBackend(StorageBackend):
 
     async def delete(self, file_path: str) -> bool:
         """Delete file from filesystem"""
-        full_path = self.base_dir / file_path
+        full_path = (self.base_dir / file_path).resolve()
+        if not full_path.is_relative_to(self.base_dir):
+            return False
         try:
             full_path.unlink()
             # Clean up empty directories
@@ -59,7 +61,10 @@ class LocalStorageBackend(StorageBackend):
 
     async def exists(self, file_path: str) -> bool:
         """Check if file exists"""
-        return (self.base_dir / file_path).exists()
+        full_path = (self.base_dir / file_path).resolve()
+        if not full_path.is_relative_to(self.base_dir):
+            return False
+        return full_path.exists()
 
     def get_url(self, file_path: str) -> str:
         """Get URL path for static file serving"""
