@@ -1,7 +1,11 @@
 import { useRef, useState } from 'react';
 import { cardApi } from '../services/api';
 
-function CardScanner() {
+interface CardScannerProps {
+  onScanComplete?: () => void;
+}
+
+function CardScanner({ onScanComplete }: CardScannerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [message, setMessage] = useState('');
@@ -16,11 +20,12 @@ function CardScanner() {
     try {
       const result = await cardApi.scanCard(file);
       setMessage(`Success: ${result.message}`);
-      // TODO: Refresh card list or add new card to state
+      onScanComplete?.();
     } catch (error) {
       setMessage(`Error: ${error instanceof Error ? error.message : 'Failed to scan card'}`);
     } finally {
       setIsScanning(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 

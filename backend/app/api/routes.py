@@ -7,6 +7,8 @@ from app.db.database import get_db
 from app.db.models import Card as CardModel
 from app.services.image_service import ImageService
 from app.services.vision_service import VisionService
+from app.services.price_service import PriceService
+from app.models.card import CardPrice
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -157,17 +159,19 @@ async def delete_card(card_id: int, db: Session = Depends(get_db)):
     return {"message": "Card deleted successfully"}
 
 
-@router.get("/cards/{card_id}/price")
+@router.get("/cards/{card_id}/price", response_model=CardPrice)
 async def get_card_price(card_id: int, db: Session = Depends(get_db)):
-    """Get price information for a card using AI agents"""
+    """Get price information for a card via eBay sold listings"""
     card = db.query(CardModel).filter(CardModel.id == card_id).first()
     if not card:
         raise HTTPException(status_code=404, detail="Card not found")
 
-    # TODO: Implement AI agent for price discovery
-    return {
-        "card_id": card_id,
-        "player_name": card.player_name,
-        "average_price": 0.0,
-        "sources": []
-    }
+    price_service = PriceService()
+    if settings.ENABLE_PRICE_LOOKUP and price_service.is_available():
+        result = await price_service.get_card_price(card)
+    else:
+        if not settings.ENABLE_PRICE_LOOKUP:
+            logger.info("Price lookup disabled via feature flag")
+        result = price_service._empty_price(card_id)
+
+    return result

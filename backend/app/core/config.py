@@ -51,6 +51,12 @@ class Settings(BaseSettings):
     VISION_MAX_TOKENS: int = 500  # Sufficient for structured card metadata
     VISION_TIMEOUT: int = 20  # 20 second timeout for API calls
 
+    # eBay Price Research
+    EBAY_CLIENT_ID: str = ""
+    EBAY_CLIENT_SECRET: str = ""
+    EBAY_SANDBOX: bool = True
+    ENABLE_PRICE_LOOKUP: bool = True
+
     class Config:
         env_file = ".env"
         case_sensitive = True

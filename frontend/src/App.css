@@ -1,42 +1,171 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
+}
+
+/* Header */
+.home header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.home header h1 {
+  margin-bottom: 0.25rem;
+}
+
+.home header p {
+  color: #888;
+  margin: 0;
+}
+
+/* Scanner */
+.card-scanner {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.scan-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #646cff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.scan-button:hover {
+  background: #535bf2;
+}
+
+.scan-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* Card List */
+.card-list {
+  text-align: left;
+}
+
+.card-list h2 {
+  margin-bottom: 1rem;
+}
+
+.loading-message {
+  text-align: center;
+  color: #888;
+}
+
+.error-message {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.retry-button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #646cff;
+  background: transparent;
+  color: #646cff;
+  cursor: pointer;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.retry-button:hover {
+  background: #646cff;
+  color: #fff;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Card Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
 }
 
-.card {
-  padding: 2em;
+.card-item {
+  background: #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.read-the-docs {
+.card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.card-item img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+}
+
+.card-info {
+  padding: 0.75rem 1rem;
+}
+
+.card-info h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+}
+
+.card-meta {
+  margin: 0;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.card-set {
+  margin: 0.25rem 0 0;
   color: #888;
+  font-size: 0.85rem;
+}
+
+.card-sport {
+  margin: 0.25rem 0 0;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.condition-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.75rem;
+  border-radius: 12px;
+  background: #333;
+  color: #ccc;
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+  .card-item {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-meta,
+  .card-set,
+  .card-sport {
+    color: #666;
+  }
+
+  .condition-badge {
+    background: #e8e8e8;
+    color: #555;
+  }
 }
