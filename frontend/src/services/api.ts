@@ -43,6 +43,17 @@ export const cardApi = {
     return response.data;
   },
 
+  // Update card
+  updateCard: async (id: number, card: CardCreate): Promise<Card> => {
+    const response = await api.put(`/cards/${id}`, card);
+    return response.data;
+  },
+
+  // Delete card
+  deleteCard: async (id: number): Promise<void> => {
+    await api.delete(`/cards/${id}`);
+  },
+
   // Get card price
   getCardPrice: async (id: number) => {
     const response = await api.get(`/cards/${id}/price`);
