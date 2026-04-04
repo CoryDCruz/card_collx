@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import CardScanner from '../components/CardScanner';
 import { cardApi } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import type { Card, CardCreate } from '../types/card';
 
 function Home() {
+  const { user, signOut } = useAuth();
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +70,13 @@ function Home() {
   return (
     <div className="home">
       <header>
-        <h1>Card Collection Tracker</h1>
+        <div className="header-top">
+          <h1>Card Collection Tracker</h1>
+          <div className="header-user">
+            <span className="user-email">{user?.email}</span>
+            <button onClick={signOut} className="logout-button">Log Out</button>
+          </div>
+        </div>
         <p>Scan and manage your sports card collection</p>
       </header>
 

@@ -7,6 +7,7 @@ class Card(Base):
     __tablename__ = "cards"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String(255), nullable=True, index=True)
     player_name = Column(String(255), nullable=False, index=True)
     year = Column(Integer, nullable=True)
     brand = Column(String(100), nullable=True)

@@ -10,6 +10,7 @@ from app.services.vision_service import VisionService
 from app.services.price_service import PriceService
 from app.models.card import CardPrice
 from app.core.config import settings
+from app.core.auth import get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -17,16 +18,16 @@ router = APIRouter()
 
 
 @router.get("/cards", response_model=List[CardSchema])
-async def get_cards(db: Session = Depends(get_db)):
-    """Get all cards in the collection"""
-    cards = db.query(CardModel).order_by(CardModel.created_at.desc()).all()
+async def get_cards(db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    """Get all cards in the authenticated user's collection"""
+    cards = db.query(CardModel).filter(CardModel.user_id == user_id).order_by(CardModel.created_at.desc()).all()
     return cards
 
 
 @router.post("/cards", response_model=CardSchema)
-async def create_card(card: CardCreate, db: Session = Depends(get_db)):
+async def create_card(card: CardCreate, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
     """Manually add a card to the collection"""
-    db_card = CardModel(**card.model_dump())
+    db_card = CardModel(**card.model_dump(), user_id=user_id)
     db.add(db_card)
     db.commit()
     db.refresh(db_card)
@@ -34,7 +35,7 @@ async def create_card(card: CardCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/cards/scan", response_model=CardScanResponse)
-async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
     """Upload and scan a card image with automatic metadata extraction"""
     # Validate content type early
     if not file.content_type or not file.content_type.startswith("image/"):
@@ -43,6 +44,7 @@ async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db))
     # Create placeholder card first (to get ID for storage path)
     db_card = CardModel(
         player_name="Unknown Player",
+        user_id=user_id,
         notes=f"Scanned from file: {file.filename}"
     )
     db.add(db_card)
@@ -119,18 +121,18 @@ async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db))
 
 
 @router.get("/cards/{card_id}", response_model=CardSchema)
-async def get_card(card_id: int, db: Session = Depends(get_db)):
+async def get_card(card_id: int, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
     """Get a specific card by ID"""
-    card = db.query(CardModel).filter(CardModel.id == card_id).first()
+    card = db.query(CardModel).filter(CardModel.id == card_id, CardModel.user_id == user_id).first()
     if not card:
         raise HTTPException(status_code=404, detail="Card not found")
     return card
 
 
 @router.put("/cards/{card_id}", response_model=CardSchema)
-async def update_card(card_id: int, card: CardCreate, db: Session = Depends(get_db)):
+async def update_card(card_id: int, card: CardCreate, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
     """Update a card"""
-    db_card = db.query(CardModel).filter(CardModel.id == card_id).first()
+    db_card = db.query(CardModel).filter(CardModel.id == card_id, CardModel.user_id == user_id).first()
     if not db_card:
         raise HTTPException(status_code=404, detail="Card not found")
 
@@ -143,9 +145,9 @@ async def update_card(card_id: int, card: CardCreate, db: Session = Depends(get_
 
 
 @router.delete("/cards/{card_id}")
-async def delete_card(card_id: int, db: Session = Depends(get_db)):
+async def delete_card(card_id: int, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
     """Delete a card"""
-    db_card = db.query(CardModel).filter(CardModel.id == card_id).first()
+    db_card = db.query(CardModel).filter(CardModel.id == card_id, CardModel.user_id == user_id).first()
     if not db_card:
         raise HTTPException(status_code=404, detail="Card not found")
 
@@ -160,9 +162,9 @@ async def delete_card(card_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/cards/{card_id}/price", response_model=CardPrice)
-async def get_card_price(card_id: int, db: Session = Depends(get_db)):
+async def get_card_price(card_id: int, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
     """Get price information for a card via eBay sold listings"""
-    card = db.query(CardModel).filter(CardModel.id == card_id).first()
+    card = db.query(CardModel).filter(CardModel.id == card_id, CardModel.user_id == user_id).first()
     if not card:
         raise HTTPException(status_code=404, detail="Card not found")
 

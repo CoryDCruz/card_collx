@@ -57,6 +57,9 @@ class Settings(BaseSettings):
     EBAY_SANDBOX: bool = True
     ENABLE_PRICE_LOOKUP: bool = True
 
+    # Supabase Auth
+    SUPABASE_JWT_SECRET: str = ""
+
     class Config:
         env_file = ".env"
         case_sensitive = True
