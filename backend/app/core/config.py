@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     ENABLE_PRICE_LOOKUP: bool = True
 
     # Supabase Auth
-    SUPABASE_JWT_SECRET: str = ""
+    SUPABASE_URL: str = ""
 
     class Config:
         env_file = ".env"
