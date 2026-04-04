@@ -12,6 +12,8 @@ A web application for tracking and managing your sports card collection. Scan ca
 - ✅ Mobile-first responsive design
 - ✅ **Full cloud deployment** — Vercel frontend, Render backend, Supabase DB + storage
 - ✅ **Card collection display** — responsive grid with images and metadata
+- ✅ **Edit and delete cards** — modal edit form, delete with confirmation
+- ✅ **User authentication** — Supabase Auth (invite-only, per-user collections)
 - 🚧 eBay price research (service scaffolded, API keys pending)
 - 🚧 Front/back card scanning for complete metadata (coming soon)
 - 🚧 Progressive Web App (PWA) support (coming soon)
@@ -176,7 +178,9 @@ npm run dev
 - [x] Full cloud deployment (Vercel + Render + Supabase)
 - [x] Mobile camera support via iPhone
 - [x] Frontend card collection display with responsive grid
+- [x] Card edit/delete from frontend
 - [x] eBay price research service scaffolded (awaiting API keys)
+- [x] Supabase Auth — invite-only user accounts with per-user collections
 
 ### 🚧 In Progress / Next Steps
 1. **eBay Price Research** - Integrate eBay Browse API for sold listings
@@ -190,7 +194,6 @@ npm run dev
    - Combine metadata from both sides for complete information
 
 ### 📋 Future Enhancements
-- [ ] User authentication
 - [ ] PWA features for offline support
 - [ ] Card search and filtering
 - [ ] Price history tracking
