@@ -30,7 +30,7 @@ function Home() {
     if (!confirm(`Delete ${card.player_name}? This cannot be undone.`)) return;
     try {
       await cardApi.deleteCard(card.id);
-      setCards(cards.filter(c => c.id !== card.id));
+      setCards(prev => prev.filter(c => c.id !== card.id));
     } catch (err) {
       alert('Failed to delete card. Please try again.');
     }
@@ -54,7 +54,7 @@ function Home() {
     if (!editingCard) return;
     try {
       const updated = await cardApi.updateCard(editingCard.id, editForm);
-      setCards(cards.map(c => c.id === updated.id ? updated : c));
+      setCards(prev => prev.map(c => c.id === updated.id ? updated : c));
       setEditingCard(null);
     } catch (err) {
       alert('Failed to update card. Please try again.');
