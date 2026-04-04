@@ -10,10 +10,10 @@ A web application for tracking and managing your sports card collection. Scan ca
 - ✅ Image upload, processing, and storage with automatic optimization
 - ✅ Catalog and organize your collection
 - ✅ Mobile-first responsive design
-- ✅ **Deployed to Vercel** - accessible from any device
-- 🚧 Display card collection in frontend UI (coming soon)
+- ✅ **Full cloud deployment** — Vercel frontend, Render backend, Supabase DB + storage
+- ✅ **Card collection display** — responsive grid with images and metadata
+- 🚧 eBay price research (service scaffolded, API keys pending)
 - 🚧 Front/back card scanning for complete metadata (coming soon)
-- 🚧 AI-powered price discovery (coming soon)
 - 🚧 Progressive Web App (PWA) support (coming soon)
 
 ## Tech Stack
@@ -173,23 +173,21 @@ npm run dev
 - [x] **OpenAI Vision API integration** for automatic card metadata extraction
   - Extracts player name, year, brand, card number, set name, sport
   - GPT-4o Vision with low-detail mode (~$0.004/card)
-- [x] Deployed frontend to Vercel
+- [x] Full cloud deployment (Vercel + Render + Supabase)
 - [x] Mobile camera support via iPhone
+- [x] Frontend card collection display with responsive grid
+- [x] eBay price research service scaffolded (awaiting API keys)
 
 ### 🚧 In Progress / Next Steps
-1. **Frontend Card Display** - Show scanned cards in the UI
-   - Fetch and display cards from API
-   - Card grid with images and metadata
-   - Visual indicators for AI-extracted vs manual data
+1. **eBay Price Research** - Integrate eBay Browse API for sold listings
+   - OAuth token flow and API client
+   - Search sold listings by card metadata
+   - Calculate average market value from recent sales
 
 2. **Front/Back Card Scanning** - Complete metadata capture
    - Support multiple images per card
    - Scan front (player image, basic info) and back (stats, card number, serial)
    - Combine metadata from both sides for complete information
-
-3. **AI Price Discovery Agent** - Market value discovery
-   - Query multiple sources (eBay, COMC, PSA, etc.)
-   - Calculate average market value
 
 ### 📋 Future Enhancements
 - [ ] User authentication
@@ -197,11 +195,19 @@ npm run dev
 - [ ] Card search and filtering
 - [ ] Price history tracking
 - [ ] Export functionality (CSV, PDF)
-- [ ] Cloud storage migration (S3/GCS/Azure)
 
-## Mobile Deployment with Vercel + ngrok
+## Deployment
 
-The frontend is deployed to Vercel for mobile access, while the backend runs locally and is exposed via ngrok.
+The app is fully deployed to the cloud:
+
+- **Frontend**: https://card-collx.vercel.app (Vercel)
+- **Backend**: https://card-collx.onrender.com (Render, free tier)
+- **Database**: Supabase PostgreSQL
+- **Storage**: Supabase S3-compatible storage
+
+### Local Development with ngrok (optional)
+
+For local backend development while using the Vercel frontend, you can use ngrok to expose your local backend.
 
 ### Current Setup
 
