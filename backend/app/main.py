@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
+import hashlib
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
@@ -57,3 +58,20 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+
+# eBay Marketplace Account Deletion webhook
+@app.get("/ebay/account-deletion")
+async def ebay_deletion_challenge(challenge_code: str = Query(...)):
+    """Respond to eBay's endpoint verification challenge."""
+    token = settings.EBAY_VERIFICATION_TOKEN
+    endpoint = settings.EBAY_DELETION_ENDPOINT
+    hash_input = challenge_code + token + endpoint
+    challenge_response = hashlib.sha256(hash_input.encode()).hexdigest()
+    return {"challengeResponse": challenge_response}
+
+
+@app.post("/ebay/account-deletion")
+async def ebay_deletion_notification():
+    """Acknowledge eBay account deletion notifications. We don't store eBay user data."""
+    return {"status": "ok"}

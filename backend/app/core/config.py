@@ -54,8 +54,10 @@ class Settings(BaseSettings):
     # eBay Price Research
     EBAY_CLIENT_ID: str = ""
     EBAY_CLIENT_SECRET: str = ""
-    EBAY_SANDBOX: bool = True
+    EBAY_SANDBOX: bool = False
     ENABLE_PRICE_LOOKUP: bool = True
+    EBAY_VERIFICATION_TOKEN: str = ""
+    EBAY_DELETION_ENDPOINT: str = ""
 
     # Supabase Auth
     SUPABASE_URL: str = ""
