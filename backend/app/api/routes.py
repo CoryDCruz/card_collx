@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
@@ -161,19 +162,27 @@ async def delete_card(card_id: int, db: Session = Depends(get_db), user_id: str 
     return {"message": "Card deleted successfully"}
 
 
-@router.get("/cards/{card_id}/price", response_model=CardPrice)
-async def get_card_price(card_id: int, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
-    """Get price information for a card via eBay sold listings"""
+@router.post("/cards/{card_id}/price", response_model=CardSchema)
+async def update_card_price(card_id: int, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    """Fetch latest price from eBay and save to card"""
     card = db.query(CardModel).filter(CardModel.id == card_id, CardModel.user_id == user_id).first()
     if not card:
         raise HTTPException(status_code=404, detail="Card not found")
 
     price_service = PriceService()
-    if settings.ENABLE_PRICE_LOOKUP and price_service.is_available():
-        result = await price_service.get_card_price(card)
-    else:
-        if not settings.ENABLE_PRICE_LOOKUP:
-            logger.info("Price lookup disabled via feature flag")
-        result = price_service._empty_price(card_id)
+    if not settings.ENABLE_PRICE_LOOKUP:
+        raise HTTPException(status_code=503, detail="Price lookup is disabled")
+    if not price_service.is_available():
+        raise HTTPException(status_code=503, detail="eBay API credentials not configured")
 
-    return result
+    result = await price_service.get_card_price(card)
+
+    if result.average_price > 0:
+        card.estimated_value = result.average_price
+        card.price_updated_at = datetime.now(timezone.utc)
+        db.commit()
+        db.refresh(card)
+    else:
+        logger.info(f"No price data found for card {card_id}")
+
+    return card

@@ -64,9 +64,9 @@ export const cardApi = {
     await api.delete(`/cards/${id}`);
   },
 
-  // Get card price
-  getCardPrice: async (id: number) => {
-    const response = await api.get(`/cards/${id}/price`);
+  // Update card price from eBay
+  updateCardPrice: async (id: number): Promise<Card> => {
+    const response = await api.post(`/cards/${id}/price`);
     return response.data;
   },
 };

@@ -14,6 +14,8 @@ export interface CardCreate extends CardBase {}
 export interface Card extends CardBase {
   id: number;
   image_url?: string;
+  estimated_value?: number;
+  price_updated_at?: string;
   created_at: string;
   updated_at: string;
 }

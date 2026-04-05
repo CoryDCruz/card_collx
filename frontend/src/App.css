@@ -263,6 +263,48 @@
   color: #ccc;
 }
 
+/* Card Price */
+.card-price {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.price-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4caf50;
+}
+
+.price-date {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.price-button {
+  margin-left: auto;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #646cff;
+  background: transparent;
+  color: #646cff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.price-button:hover {
+  background: #646cff;
+  color: #fff;
+}
+
+.price-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Card Actions */
 .card-actions {
   display: flex;
@@ -472,5 +514,19 @@
 
   .logout-button:hover {
     background: #e8e8e8;
+  }
+
+  .price-value {
+    color: #2e7d32;
+  }
+
+  .price-button {
+    border-color: #535bf2;
+    color: #535bf2;
+  }
+
+  .price-button:hover {
+    background: #535bf2;
+    color: #fff;
   }
 }

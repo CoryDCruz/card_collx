@@ -67,6 +67,23 @@ function Home() {
     setEditingCard(null);
   };
 
+  const [pricingCardId, setPricingCardId] = useState<number | null>(null);
+
+  const handleUpdatePrice = async (card: Card) => {
+    setPricingCardId(card.id);
+    try {
+      const updated = await cardApi.updateCardPrice(card.id);
+      setCards(prev => prev.map(c => c.id === updated.id ? updated : c));
+      if (updated.estimated_value === null || updated.estimated_value === undefined) {
+        alert('No eBay listings found for this card. Try editing the metadata for a better match.');
+      }
+    } catch (err) {
+      alert('Failed to fetch price. Please try again.');
+    } finally {
+      setPricingCardId(null);
+    }
+  };
+
   return (
     <div className="home">
       <header>
@@ -112,6 +129,27 @@ function Home() {
                     {card.condition && (
                       <span className="condition-badge">{card.condition}</span>
                     )}
+                    <div className="card-price">
+                      {card.estimated_value != null ? (
+                        <>
+                          <span className="price-value">${card.estimated_value.toFixed(2)}</span>
+                          {card.price_updated_at && (
+                            <span className="price-date">
+                              Updated {new Date(card.price_updated_at).toLocaleDateString()}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="price-date">No price data</span>
+                      )}
+                      <button
+                        className="price-button"
+                        onClick={() => handleUpdatePrice(card)}
+                        disabled={pricingCardId === card.id}
+                      >
+                        {pricingCardId === card.id ? 'Checking...' : card.estimated_value != null ? 'Refresh Price' : 'Get Price'}
+                      </button>
+                    </div>
                     <div className="card-actions">
                       <button className="edit-button" onClick={() => handleEditStart(card)}>Edit</button>
                       <button className="delete-button" onClick={() => handleDelete(card)}>Delete</button>

@@ -21,6 +21,8 @@ class CardCreate(CardBase):
 class Card(CardBase):
     id: int
     image_url: Optional[str] = None
+    estimated_value: Optional[float] = None
+    price_updated_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text
+from sqlalchemy import Column, Integer, String, DateTime, Text, Float
 from sqlalchemy.sql import func
 from app.db.database import Base
 
@@ -17,6 +17,8 @@ class Card(Base):
     condition = Column(String(50), nullable=True)
     notes = Column(Text, nullable=True)
     image_url = Column(String(500), nullable=True)
+    estimated_value = Column(Float, nullable=True)
+    price_updated_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
