@@ -101,7 +101,14 @@ function Home() {
         <CardScanner onScanComplete={fetchCards} />
 
         <section className="card-list">
-          <h2>Your Collection ({cards.length})</h2>
+          <div className="collection-header">
+            <h2>Your Collection ({cards.length})</h2>
+            {cards.some(c => c.estimated_value != null) && (
+              <span className="collection-value">
+                Est. Value: ${cards.reduce((sum, c) => sum + (c.estimated_value ?? 0), 0).toFixed(2)}
+              </span>
+            )}
+          </div>
 
           {loading ? (
             <p className="loading-message">Loading your collection...</p>

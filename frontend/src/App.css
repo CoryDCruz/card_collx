@@ -171,8 +171,21 @@
   text-align: left;
 }
 
-.card-list h2 {
+.collection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 1rem;
+}
+
+.collection-header h2 {
+  margin: 0;
+}
+
+.collection-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4caf50;
 }
 
 .loading-message {
@@ -516,6 +529,7 @@
     background: #e8e8e8;
   }
 
+  .collection-value,
   .price-value {
     color: #2e7d32;
   }
