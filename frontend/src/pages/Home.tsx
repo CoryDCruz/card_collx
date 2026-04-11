@@ -136,6 +136,9 @@ function Home() {
                     {card.condition && (
                       <span className="condition-badge">{card.condition}</span>
                     )}
+                    {card.notes && (
+                      <p className="card-notes">{card.notes}</p>
+                    )}
                     <div className="card-price">
                       {card.estimated_value != null ? (
                         <>

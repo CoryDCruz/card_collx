@@ -276,6 +276,13 @@
   color: #ccc;
 }
 
+.card-notes {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: #999;
+  font-style: italic;
+}
+
 /* Card Price */
 .card-price {
   display: flex;
@@ -464,6 +471,10 @@
   .condition-badge {
     background: #e8e8e8;
     color: #555;
+  }
+
+  .card-notes {
+    color: #777;
   }
 
   .edit-button {
