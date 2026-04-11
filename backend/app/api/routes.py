@@ -93,6 +93,19 @@ async def scan_card(file: UploadFile = File(...), db: Session = Depends(get_db),
             else:
                 logger.info("Vision service not available - skipping metadata extraction")
 
+        # Auto-fetch price if metadata was extracted and price lookup is enabled
+        if metadata_extracted and settings.ENABLE_PRICE_LOOKUP:
+            try:
+                price_service = PriceService()
+                if price_service.is_available():
+                    result = await price_service.get_card_price(db_card)
+                    if result.average_price > 0:
+                        db_card.estimated_value = result.average_price
+                        db_card.price_updated_at = datetime.now(timezone.utc)
+                        db.commit()
+            except Exception as e:
+                logger.warning(f"Auto-pricing failed for card {db_card.id}: {e}")
+
         # Refresh to get updated values
         db.refresh(db_card)
 
