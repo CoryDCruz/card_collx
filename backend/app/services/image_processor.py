@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageOps
 from io import BytesIO
 from typing import Tuple
 import hashlib
@@ -77,6 +77,9 @@ class ImageProcessor:
         """
         # Open image
         img = Image.open(BytesIO(file_data))
+
+        # Apply EXIF orientation (fixes sideways photos from mobile cameras)
+        img = ImageOps.exif_transpose(img)
 
         # Convert RGBA to RGB if necessary (for JPEG)
         if img.mode in ('RGBA', 'LA', 'P'):
