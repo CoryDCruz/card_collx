@@ -1,10 +1,12 @@
 from contextlib import asynccontextmanager
 import hashlib
 import logging
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
+from sqlalchemy.exc import OperationalError, DBAPIError
 from app.api import routes
 from app.core.config import settings
 from app.db.database import init_db
@@ -15,10 +17,13 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Initialize database
+    # Startup: best-effort DB init. init_db never raises, so a DB outage at
+    # boot (e.g. paused Supabase) won't prevent the app from starting.
     init_db()
     yield
     # Shutdown: cleanup if needed
@@ -45,6 +50,17 @@ if settings.STORAGE_TYPE == "local":
     upload_dir = Path(settings.UPLOAD_DIR)
     upload_dir.mkdir(parents=True, exist_ok=True)
     app.mount("/uploads", StaticFiles(directory=str(upload_dir)), name="uploads")
+
+# Convert database connection failures into 503s instead of unhandled 500s,
+# so a transient DB outage degrades gracefully rather than looking like a crash.
+@app.exception_handler(OperationalError)
+async def database_unavailable_handler(request: Request, exc: OperationalError):
+    logger.error("Database unavailable for %s %s: %s", request.method, request.url.path, exc)
+    return JSONResponse(
+        status_code=503,
+        content={"detail": "Database temporarily unavailable. Please try again shortly."},
+    )
+
 
 # Include API routes
 app.include_router(routes.router, prefix="/api")
